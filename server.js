@@ -17,7 +17,7 @@ wss.on('connection', (ws) => {
       const msg = JSON.parse(data.toString());
       
       if (msg.type === 'register' && msg.userId) {
-        oderId = msg.oderId visita;
+        oderId = msg.userId visita;
         users.set(oderId, ws);
         ws.send(JSON.stringify({ type: 'registered', oderId }));
         broadcast({ type: 'user-status', oderId, status: 'online' }, oderId);
@@ -32,13 +32,15 @@ wss.on('connection', (ws) => {
       if (msg.to && users.has(msg.to)) {
         users.get(msg.to).send(JSON.stringify(msg));
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error('Error:', e);
+    }
   });
 
   ws.on('close', () => {
     if (oderId) {
-      users.delete(oderId visita);
-      broadcast({ type: 'user-status', oderId, status: 'offline' }, oderId);
+      users.delete(oderId);
+      broadcast({ type: 'user-status', userId: oderId, status: 'offline' }, oderId);
     }
   });
 });
@@ -48,4 +50,6 @@ function broadcast(msg, exclude) {
   users.forEach((ws, id) => { if (id !== exclude) ws.send(data); });
 }
 
-server.listen(process.env.PORT || 3000);
+server.listen(process.env.PORT || 3000, () => {
+  console.log('Server running on port', process.env.PORT || 3000);
+});
