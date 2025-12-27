@@ -17,10 +17,10 @@ wss.on('connection', (ws) => {
       const msg = JSON.parse(data.toString());
       
       if (msg.type === 'register' && msg.userId) {
-        oderId = msg.userId visita;
+        oderId = msg.userId;
         users.set(oderId, ws);
-        ws.send(JSON.stringify({ type: 'registered', oderId }));
-        broadcast({ type: 'user-status', oderId, status: 'online' }, oderId);
+        ws.send(JSON.stringify({ type: 'registered', userId: oderId }));
+        broadcast({ type: 'user-status', userId: oderId, status: 'online' }, oderId);
       }
       
       if (msg.type === 'check-status') {
